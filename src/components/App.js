@@ -243,19 +243,17 @@ function App() {
           </Route>
           <Route>
             {isLoggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
+            <ProtectedRoute path="/" isLoggedIn={isLoggedIn}>
+              <Main
+                onEditProfileClick={handleEditProfileClick}
+                onAddPlaceClick={handleAddPlaceClick}
+                onEditAvatarClick={handleEditAvatarClick}
+                onCardClick={handleCardClick}
+                onCardLike={handleCardLike}
+                onDeleteClick={handleRemoveCard}
+              />
+            </ProtectedRoute>
           </Route>
-
-          <ProtectedRoute path="/" loggedIn={isLoggedIn}>
-            <Main
-              onEditProfileClick={handleEditProfileClick}
-              onAddPlaceClick={handleAddPlaceClick}
-              onEditAvatarClick={handleEditAvatarClick}
-              onCardClick={handleCardClick}
-              onCardLike={handleCardLike}
-              onDeleteClick={handleRemoveCard}
-              cards={cards}
-            />
-          </ProtectedRoute>
         </Switch>
 
         <EditProfilePopup
