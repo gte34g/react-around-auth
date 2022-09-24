@@ -16,7 +16,6 @@ function Login({ onLogin }) {
   };
   
   return (
-    <>
       <form className="form login__form" onSubmit={handleSubmit}>
         <p className="login__welcome">Log in</p>
         <label className="login__input-wrapper">
@@ -50,7 +49,6 @@ function Login({ onLogin }) {
           Not a member yet? Sign up here!
         </Link>
       </form>
-    </>
   );
 }
 

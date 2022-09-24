@@ -40,26 +40,22 @@ function App() {
   const [toolTipStatus, setToolTipStatus] = React.useState("");
 
   React.useEffect(() => {
-    const token = localStorage.getItem("jwt");
+    const token = localStorage.getItem("token");
     if (token) {
       auth
         .checkToken(token)
         .then((res) => {
-          if (res) {
+          if (res.data._id) {
             setEmail(res.data.email);
             setIsLoggedIn(true);
             history.push("/");
           } else {
-            localStorage.removeItem("jwt");
+            localStorage.removeItem("token");
           }
         })
         .catch((err) => console.log(err));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
- 
-
 
   const handleEditAvatarClick = () => {
     setIsEditAvatarPopupOpen(true);
@@ -107,8 +103,8 @@ function App() {
       .setUserAvatar({ avatar })
       .then((res) => {
         setCurrentUser(res);
+        closeAllPopups();
       })
-      .then(closeAllPopups)
       .catch((err) => console.log(err));
   }
 
@@ -117,8 +113,8 @@ function App() {
       .createCard({ name, link })
       .then((res) => {
         setCards([res, ...cards]);
+        closeAllPopups();
       })
-      .then(closeAllPopups)
       .catch((err) => console.log(err));
   }
 
@@ -157,8 +153,6 @@ function App() {
       .catch((err) => console.log(err));
   }, []);
 
-
-
   const closeAllPopups = () => {
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
@@ -183,8 +177,7 @@ function App() {
      auth
        .register(email, password)
        .then((res) => {
-         if (res.data._id) {
-           console.log(res.data._id);
+         if (res.data) {
            setToolTipStatus("success");
            setIsInfoTooltipOpen(true);
            history.push("/signin");
@@ -194,7 +187,6 @@ function App() {
          }
        })
        .catch((err) => {
-         console.log(err);
          setToolTipStatus("fail");
          setIsInfoTooltipOpen(true);
        });
@@ -205,20 +197,17 @@ function App() {
        .login(email, password)
        .then((res) => {
          if (res.token) {
-           
            setIsLoggedIn(true);
            setEmail(email);
            localStorage.setItem("jwt", res.token);
-
            history.push("/");
-           console.log(res.token);
+           console.log(res.token)
          } else {
            setToolTipStatus("fail");
            setIsInfoTooltipOpen(true);
          }
        })
        .catch((err) => {
-         console.log(err);
          setToolTipStatus("fail");
          setIsInfoTooltipOpen(true);
        });
@@ -241,20 +230,23 @@ function App() {
           <Route path="/signin">
             <Login onLogin={onLogin} />
           </Route>
+          <ProtectedRoute path="/" isLoggedIn={isLoggedIn}>
+            <Main
+              onEditProfileClick={handleEditProfileClick}
+              onAddPlaceClick={handleAddPlaceClick}
+              onEditAvatarClick={handleEditAvatarClick}
+              onCardClick={handleCardClick}
+              onCardLike={handleCardLike}
+              onDeleteClick={handleRemoveCard}
+            />
+          </ProtectedRoute>
+
           <Route>
             {isLoggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
-            <ProtectedRoute path="/" isLoggedIn={isLoggedIn}>
-              <Main
-                onEditProfileClick={handleEditProfileClick}
-                onAddPlaceClick={handleAddPlaceClick}
-                onEditAvatarClick={handleEditAvatarClick}
-                onCardClick={handleCardClick}
-                onCardLike={handleCardLike}
-                onDeleteClick={handleRemoveCard}
-              />
-            </ProtectedRoute>
           </Route>
         </Switch>
+
+        <Footer />
 
         <EditProfilePopup
           isOpen={isEditProfilePopupOpen}
@@ -276,8 +268,6 @@ function App() {
           isOpen={isImagePreviewOpen}
           onClose={closeAllPopups}
         />
-
-        <Footer />
         <InfoTooltip
           isOpen={isInfoTooltipOpen}
           onClose={closeAllPopups}

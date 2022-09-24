@@ -15,7 +15,6 @@ function Register({ onRegister }) {
   }
 
   return (
-    <>
       <form className="form login__form" onSubmit={handleSubmit}>
         <p className="login__welcome">Sign up</p>
         <label className="login__input-wrapper">
@@ -49,7 +48,6 @@ function Register({ onRegister }) {
           Already a member? Log in here!
         </Link>
       </form>
-    </>
   );
 }
 
