@@ -39,6 +39,14 @@ function App() {
   const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
   const [toolTipStatus, setToolTipStatus] = React.useState("");
 
+  const isOpen =
+    isEditProfilePopupOpen ||
+    isAddPlacePopupOpen ||
+    isEditAvatarPopupOpen ||
+    isImagePreviewOpen;
+  
+
+
   React.useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -161,17 +169,20 @@ function App() {
     setIsInfoTooltipOpen(false);
   };
   
-   React.useEffect(() => {
-     const closeByEscape = (e) => {
-       if (e.key === "Escape") {
-         closeAllPopups();
-       }
-     };
+  React.useEffect(() => {
+    const closeByEscape = (e) => {
+      if (e.key === "Escape") {
+        closeAllPopups();
+      }
+    };
 
-     document.addEventListener("keydown", closeByEscape);
-
-     return () => document.removeEventListener("keydown", closeByEscape);
-   }, []);
+    if (isOpen) {
+      document.addEventListener("keydown", closeByEscape);
+    }
+    return () => {
+      document.removeEventListener("keydown", closeByEscape);
+    };
+  }, [isOpen]);
 
    function onRegister({ email, password }) {
      auth
@@ -201,7 +212,6 @@ function App() {
            setEmail(email);
            localStorage.setItem("jwt", res.token);
            history.push("/");
-           console.log(res.token)
          } else {
            setToolTipStatus("fail");
            setIsInfoTooltipOpen(true);
